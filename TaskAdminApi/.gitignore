@@ -1,4 +1,5 @@
-﻿bin/
+﻿.idea/
+bin/
 obj/
 .vs/
 node_modules/
