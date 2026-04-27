@@ -15,21 +15,26 @@ public class TasksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTasks(string? status)
+    public async Task<IActionResult> GetTasks(int? projectId, string? status)
     {
-        var sql = _context.Tasks.AsQueryable();
-        if (!string.IsNullOrEmpty(status))
-        
-            sql = sql.Where(t => t.Status == status);
-        return Ok(await sql.ToListAsync());
+        var query = _context.Tasks.AsQueryable();
 
+        if (projectId.HasValue)
+            query = query.Where(t => t.ProjectId == projectId.Value);
+
+        if (!string.IsNullOrWhiteSpace(status))
+            query = query.Where(t => t.Status == status);
+
+        var tasks = await query.ToListAsync();
+
+        return Ok(tasks);
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> CreateTask(TaskItems task)
+    public async Task<IActionResult> CreateTask([FromBody] TaskItems task)
     {
-        if (string.IsNullOrEmpty(task.Title))
+        if (string.IsNullOrWhiteSpace(task.Title))
             return BadRequest("Title is required");
 
         _context.Tasks.Add(task);

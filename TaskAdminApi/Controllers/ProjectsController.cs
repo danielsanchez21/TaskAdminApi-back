@@ -33,5 +33,32 @@ public class ProjectsController: ControllerBase
         await _context.SaveChangesAsync();
         return Ok(project);
     }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProject(int id, Project project)
+    {
+        var existing = await _context.Projects.FindAsync(id);
+
+        if (existing == null)
+            return NotFound();
+
+        existing.Name = project.Name;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(existing);
+    }
     
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        var project = await _context.Projects.FindAsync(id);
+
+        if (project == null)
+            return NotFound();
+
+        _context.Projects.Remove(project);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
 }
